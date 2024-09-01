@@ -5,11 +5,13 @@
 #include <fstream>
 #include <string>
 
-using namespace std;
 #define numVAOs 1
 
 GLuint renderingProgram;
 GLuint vao[numVAOs];
+
+float x = 0.0f;
+float inc = 0.01f;
 
 GLuint createShaderProgram();
 void init(GLFWwindow* window);
@@ -110,8 +112,20 @@ void init(GLFWwindow* window)
 
 void display(GLFWwindow* window, double currentTime)
 {
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	glUseProgram(renderingProgram);
-	glPointSize(300.0f);
+
+	x += inc;
+	if (x > 1.0f) inc = -0.01f;
+	if (x < -1.0f) inc = 0.01f;
+	GLuint offsetLoc = glGetUniformLocation(renderingProgram, "offset");
+	glProgramUniform1f(renderingProgram, offsetLoc, x);
+
+
+	//glPointSize(300.0f);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
