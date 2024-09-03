@@ -1,6 +1,12 @@
 #version 430 core
+
+in vec4 varyingColor;
+
 out vec4 FragColor;
+
+uniform mat4 mvp_matrix;
+
 void main()
 {
-	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+	FragColor = varyingColor;
 };
