@@ -64,13 +64,6 @@ void Renderer::Clear() const
 	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 
-void Renderer::Draw(const VertexArray& VAO, const Shader& shader) const
-{
-	VAO.Bind();
-	shader.Bind();
-	GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
-}
-
 void Renderer::Draw(const VertexArray& VAO, const IndexBuffer& IBO, const Shader& shader) const
 {
 	VAO.Bind();

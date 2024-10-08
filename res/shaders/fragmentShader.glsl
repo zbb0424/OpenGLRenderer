@@ -1,12 +1,13 @@
 #version 430 core
 
-in vec4 varyingColor;
+layout(location = 0) out vec4 color;
+ 
+uniform sampler2D u_Texture;
 
-out vec4 FragColor;
-
-uniform mat4 mvp_matrix;
+in vec2 v_TexCoord;
 
 void main()
 {
-	FragColor = varyingColor;
+	vec4 texColor = texture(u_Texture, v_TexCoord);
+	color = texColor;
 };

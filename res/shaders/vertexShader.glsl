@@ -1,13 +1,12 @@
 #version 430 core
 
-layout (location = 0) in vec3 aPos;
+layout(location = 0) in vec4 position;
+layout(location = 1) in vec2 texCoord;
 
-uniform mat4 mvp_matrix;
-
-out vec4 varyingColor;
+out vec2 v_TexCoord;
 
 void main()
 {
-    gl_Position = mvp_matrix * vec4(aPos, 1.0);
-    varyingColor = vec4(aPos,1.0) * 0.5 + vec4(0.5, 0.5, 0.5, 0.5);
-}
+	gl_Position = position;
+	v_TexCoord = texCoord;
+};
