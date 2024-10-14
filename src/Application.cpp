@@ -16,7 +16,8 @@
 #include "Shader.h"
 #include "Texture.h"
 
-#include "Cube.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw_gl3.h"
 
 int main(void)
 {
@@ -29,7 +30,7 @@ int main(void)
 	if (!glfwInit()) return -1;
 
 	//glfw window creation
-	GLFWwindow* window = glfwCreateWindow(600, 600, "Hello World", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(1920, 1080, "Hello World", NULL, NULL);
 	if (!window)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -44,10 +45,10 @@ int main(void)
 
 	{
 		float positions[] = {
-			-0.5f, -0.5f, 0.0f, 0.0f,
-			 0.5f, -0.5f, 1.0f, 0.0f,
-			 0.5f,  0.5f, 1.0f, 1.0f,
-			-0.5f,  0.5f, 0.0f, 1.0f
+			-50.0f, -50.0f, 0.0f, 0.0f,
+			 50.0f, -50.0f, 1.0f, 0.0f,
+			 50.0f,  50.0f, 1.0f, 1.0f,
+			-50.0f,  50.0f, 0.0f, 1.0f
 		};
 
 		unsigned int indices[] = {
@@ -67,6 +68,9 @@ int main(void)
 
 		IndexBuffer IBO(indices, 6);
 
+		glm::mat4 proj = glm::ortho(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f);
+		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+
 		//build and compile shader program
 		// ------------------------------------
 		Shader shader("res/shaders/vertexShader.glsl", "res/shaders/fragmentShader.glsl");
@@ -83,19 +87,48 @@ int main(void)
 
 		Renderer renderer;
 
-		float r = 0.0f;
-		float increment = 0.05f;
+		ImGui::CreateContext();
+		ImGui_ImplGlfwGL3_Init(window, true);
+		ImGui::StyleColorsDark();
+
+		glm::vec3 translationA(200, 200, 0);
+		glm::vec3 translationB(400, 200, 0);
+
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
 		{
 			renderer.Clear();
+
+			ImGui_ImplGlfwGL3_NewFrame();
+
 			shader.Bind();
 			VAO.Bind();
 			IBO.Bind();
 
-			renderer.Draw(VAO, IBO, shader);
+			{
+				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationA);
+				glm::mat4 mvp = proj * view * model;
+				shader.SetUniformMat4f("u_MVP", mvp);
+				renderer.Draw(VAO, IBO, shader);
+			}
 
+			{
+				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationB);
+				glm::mat4 mvp = proj * view * model;
+				shader.SetUniformMat4f("u_MVP", mvp);
+				renderer.Draw(VAO, IBO, shader);
+			}
+			 
 			VAO.Unbind();
+
+			{                        
+				ImGui::SliderFloat3("Translation A", &translationA.x, 0.0f, 1920.0f);
+				ImGui::SliderFloat3("Translation B", &translationB.x, 0.0f, 1920.0f);
+				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			}
+
+			ImGui::Render();
+			ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
 
 			// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 			// -------------------------------------------------------------------------------
@@ -103,6 +136,9 @@ int main(void)
 			glfwPollEvents();
 		}
 	}
+	ImGui_ImplGlfwGL3_Shutdown();
+	ImGui::DestroyContext();
+
 	// glfw: terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------
 	glfwTerminate();
