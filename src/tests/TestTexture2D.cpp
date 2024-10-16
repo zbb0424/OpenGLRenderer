@@ -38,7 +38,7 @@ namespace test {
 		m_IBO = std::make_unique<IndexBuffer>(indices, 6);
 
 		//build and compile shader program
-		// ------------------------------------
+		// -------------------------------
 		m_Shader = std::make_unique<Shader>("res/shaders/vertexShader.glsl", "res/shaders/fragmentShader.glsl");
 		m_Shader->Bind();
 		m_Shader->SetUniform4f("u_Color", 0.0f, 0.3f, 0.8f, 1.0f);
