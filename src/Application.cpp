@@ -1,25 +1,16 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "glm/glm.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-
 #include <iostream>
 #include <string>
 
 #include "Renderer.h"
 
-#include "VertexArray.h"
-#include "VertexBufferLayout.h"
-#include "IndexBuffer.h"
-#include "Shader.h"
-#include "Texture.h"
-
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw_gl3.h"
 
 #include "tests/ClearColor.h"
+#include "tests/TestTexture2D.h"
 
 int main(void)
 {
@@ -60,6 +51,7 @@ int main(void)
 		currentTest = testMenu;
 		
 		testMenu->RegisterTest<test::ClearColor>("Clear Color");
+		testMenu->RegisterTest<test::TestTexture2D>("2D Texture");
 
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
