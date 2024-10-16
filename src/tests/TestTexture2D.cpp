@@ -35,7 +35,6 @@ namespace test {
 		layout.Push<float>(2);
 		m_VAO->AddBuffer(*m_VBO, layout);
 
-		IndexBuffer IBO(indices, 6);
 		m_IBO = std::make_unique<IndexBuffer>(indices, 6);
 
 		//build and compile shader program
