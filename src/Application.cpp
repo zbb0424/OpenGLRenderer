@@ -4,18 +4,23 @@
 #include <iostream>
 #include <string>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Renderer.h"
+#include "VertexArray.h"
+#include "VertexBufferLayout.h"
+#include "Shader.h"
+#include "Texture.h"
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw_gl3.h"
-
-#include "tests/ClearColor.h"
-#include "tests/TestTexture2D.h"
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
 
 int main(void)
 {
+#pragma region INIT GLFW AND GLEW
 	//glfw glew:initialize and configure
-	//-------------------------
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -35,63 +40,101 @@ int main(void)
 
 	if (glewInit() != GLEW_OK)
 		std::cout << "GLEW Error!" << std::endl;
+#pragma endregion
+
+#pragma region BLEND
+	GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+	GLCall(glEnable(GL_BLEND));
+#pragma endregion
 
 	{
-		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-		GLCall(glEnable(GL_BLEND));
+#pragma region BUFFER SETTING
+		float vertices[] = {
+			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+		};
+		VertexArray VAO;
+		VertexBuffer VBO(vertices, sizeof(vertices));
+		VertexBufferLayout layout;
+		layout.Push<float>(3);
+		layout.Push<float>(2);
+		VAO.AddBuffer(VBO, layout);
+#pragma endregion
+
+#pragma region SHADER AND TEXTURE
+		Shader shader("res/shaders/vertexShader.glsl", "res/shaders/fragmentShader.glsl");
+		shader.Bind();
+
+		Texture texture_face("res/textures/awesomeface.png");
+		Texture texture_container("res/textures/container.jpg");
+
+		shader.SetUniform1i("texture0", 0);
+		shader.SetUniform1i("texture1", 1);
+#pragma endregion
 
 		Renderer renderer;
-
-		ImGui::CreateContext();
-		ImGui_ImplGlfwGL3_Init(window, true);
-		ImGui::StyleColorsDark();
-
-		test::Test* currentTest = nullptr;
-		test::TestMenu* testMenu = new test::TestMenu(currentTest);
-		currentTest = testMenu;
-		
-		testMenu->RegisterTest<test::ClearColor>("Clear Color");
-		testMenu->RegisterTest<test::TestTexture2D>("2D Texture");
 
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
 		{
-			GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
-			renderer.Clear();
+			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			ImGui_ImplGlfwGL3_NewFrame();
+			texture_face.Bind(0);
+			texture_container.Bind(1);
+			glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+			glm::mat4 view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+			glm::mat4 model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
+			glm::mat4 mvp = projection * view * model;
+			shader.SetUniformMat4f("u_MVP", mvp);
 
-			if (currentTest)
-			{
-				currentTest->OnUpdate(0.0f);
-				currentTest->OnRender();
-				ImGui::Begin("Test");
-				if (currentTest != testMenu && ImGui::Button("<-"))
-				{
-					delete currentTest;
-					currentTest = testMenu;
-				}
-				currentTest->OnImGuiRender();
-				ImGui::End();
-			}
-
-			ImGui::Render();
-			ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+			renderer.DrawWithoutIBO(VAO, shader);
 
 			// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-			// -------------------------------------------------------------------------------
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
-		delete currentTest;
-		if (currentTest != testMenu)
-			delete testMenu;
 	}
-	ImGui_ImplGlfwGL3_Shutdown();
-	ImGui::DestroyContext();
-
 	// glfw: terminate, clearing all previously allocated GLFW resources.
-	// ------------------------------------------------------------------
 	glfwTerminate();
 	return 0;
 }

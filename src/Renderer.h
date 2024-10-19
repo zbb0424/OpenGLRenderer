@@ -23,4 +23,5 @@ class Renderer
 public:
 	void Clear() const;
 	void Draw(const VertexArray& VAO, const IndexBuffer& IBO, const Shader& shader) const;
+	void DrawWithoutIBO(const VertexArray& VAO, const Shader& shader) const;
 };
