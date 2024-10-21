@@ -53,6 +53,10 @@
     <ClInclude Include="src\VertexBuffer.h" />
     <ClInclude Include="src\VertexBufferLayout.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="res\shaders\fragmentShader_light.glsl" />
+    <None Include="res\shaders\vertexShader_light.glsl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
