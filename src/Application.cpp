@@ -125,16 +125,22 @@ int main(void)
 		Shader shader("res/shaders/vertexShader.glsl", "res/shaders/fragmentShader.glsl");
 		shader.Bind();
 
-		shader.SetUniform1i("texture0", 0);
-		shader.SetUniform1i("texture1", 1);
-		shader.SetUniformVec3f("lightColor", 1.0f, 1.0f, 1.0f);
+		//shader.SetUniform1i("texture0", 0);
+		//shader.SetUniform1i("texture1", 1);
 		shader.SetUniformVec3f("lightPos", lightPos);
 		shader.SetUniformVec3f("viewPos", camera.Position);
+		shader.SetUniformVec3f("material.ambient", 1.0f, 0.5f, 0.31f);
+		shader.SetUniformVec3f("material.diffuse", 1.0f, 0.5f, 0.31f);
+		shader.SetUniformVec3f("material.specular", 0.5f, 0.5f, 0.5f);
+		shader.SetUniformVec3f("light.ambient", 0.2f, 0.2f, 0.2f);
+		shader.SetUniformVec3f("light.diffuse", 0.5f, 0.5f, 0.5f);
+		shader.SetUniformVec3f("light.specular", 1.0f, 1.0f, 1.0f);
+		shader.SetUniform1f("material.shininess", 32.0f);
 
-		Texture texture_face("res/textures/awesomeface.png");
-		Texture texture_container("res/textures/container.jpg");
-		texture_face.Bind(0);
-		texture_container.Bind(1);
+		//Texture texture_face("res/textures/awesomeface.png");
+		//Texture texture_container("res/textures/container.jpg");
+		//texture_face.Bind(0);
+		//texture_container.Bind(1);
 		shader.Unbind();
 
 		Shader lightShader("res/shaders/vertexShader_light.glsl", "res/shaders/fragmentShader_light.glsl");
