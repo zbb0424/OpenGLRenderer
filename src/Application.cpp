@@ -125,22 +125,21 @@ int main(void)
 		Shader shader("res/shaders/vertexShader.glsl", "res/shaders/fragmentShader.glsl");
 		shader.Bind();
 
-		//shader.SetUniform1i("texture0", 0);
-		//shader.SetUniform1i("texture1", 1);
-		shader.SetUniformVec3f("lightPos", lightPos);
 		shader.SetUniformVec3f("viewPos", camera.Position);
-		shader.SetUniformVec3f("material.ambient", 1.0f, 0.5f, 0.31f);
-		shader.SetUniformVec3f("material.diffuse", 1.0f, 0.5f, 0.31f);
-		shader.SetUniformVec3f("material.specular", 0.5f, 0.5f, 0.5f);
+
+		shader.SetUniform1i("material.diffuse", 0);
+		shader.SetUniform1i("material.specular", 1);
+		shader.SetUniform1f("material.shininess", 32.0f);
+
+		shader.SetUniformVec3f("light.position", lightPos);
 		shader.SetUniformVec3f("light.ambient", 0.2f, 0.2f, 0.2f);
 		shader.SetUniformVec3f("light.diffuse", 0.5f, 0.5f, 0.5f);
 		shader.SetUniformVec3f("light.specular", 1.0f, 1.0f, 1.0f);
-		shader.SetUniform1f("material.shininess", 32.0f);
 
-		//Texture texture_face("res/textures/awesomeface.png");
-		//Texture texture_container("res/textures/container.jpg");
-		//texture_face.Bind(0);
-		//texture_container.Bind(1);
+		Texture texture("res/textures/container2.png");
+		Texture texture_specular("res/textures/container2.png");
+		texture.Bind(0);
+		texture_specular.Bind(1);
 		shader.Unbind();
 
 		Shader lightShader("res/shaders/vertexShader_light.glsl", "res/shaders/fragmentShader_light.glsl");
@@ -184,7 +183,7 @@ int main(void)
 				VAO.Bind();
 				shader.Bind();
 
-				glm::mat4 model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+				glm::mat4 model = glm::rotate(glm::mat4(1.0f),  glm::radians(0.0f), glm::vec3(0.5f, 1.0f, 0.0f));//(float)glfwGetTime() *
 				glm::mat4 view = camera.GetViewMatrix();
 				glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 				shader.SetUniformMat4f("model", model);
