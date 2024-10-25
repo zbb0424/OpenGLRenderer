@@ -143,10 +143,13 @@ int main(void)
 		shader.SetUniform1i("material.specular", 1);
 		shader.SetUniform1f("material.shininess", 32.0f);
 
-		shader.SetUniformVec3f("light.direction", -0.2, -1.0f, -0.3f);
+		shader.SetUniformVec3f("light.position", lightPos);
 		shader.SetUniformVec3f("light.ambient", 0.2f, 0.2f, 0.2f);
 		shader.SetUniformVec3f("light.diffuse", 0.5f, 0.5f, 0.5f);
 		shader.SetUniformVec3f("light.specular", 1.0f, 1.0f, 1.0f);
+		shader.SetUniform1f("light.constant", 1.0f);
+		shader.SetUniform1f("light.linear", 0.09f);
+		shader.SetUniform1f("light.quadratic", 0.032f);
 
 		Texture texture("res/textures/container2.png");
 		Texture texture_specular("res/textures/container2.png");

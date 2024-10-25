@@ -54,7 +54,9 @@
     <ClInclude Include="src\VertexBufferLayout.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\shaders\fragmentShader.glsl" />
     <None Include="res\shaders\fragmentShader_light.glsl" />
+    <None Include="res\shaders\vertexShader.glsl" />
     <None Include="res\shaders\vertexShader_light.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
