@@ -62,7 +62,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{e13ab654-9af6-4e3d-ad13-0e133910ad5f}</ProjectGuid>
     <RootNamespace>OpenGLRenderer</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.20348.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
