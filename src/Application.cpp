@@ -143,7 +143,8 @@ int main(void)
 		shader.SetUniform1i("material.specular", 1);
 		shader.SetUniform1f("material.shininess", 32.0f);
 
-		shader.SetUniformVec3f("light.position", lightPos);
+		shader.SetUniform1f("light.cutOff", glm::cos(glm::radians(12.5)));
+		shader.SetUniform1f("light.outerCutOff", glm::cos(glm::radians(17.5f)));
 		shader.SetUniformVec3f("light.ambient", 0.2f, 0.2f, 0.2f);
 		shader.SetUniformVec3f("light.diffuse", 0.5f, 0.5f, 0.5f);
 		shader.SetUniformVec3f("light.specular", 1.0f, 1.0f, 1.0f);
@@ -202,7 +203,8 @@ int main(void)
 				glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 				shader.SetUniformMat4f("view", view);
 				shader.SetUniformMat4f("projection", projection);
-
+				shader.SetUniformVec3f("light.position", camera.Position);
+				shader.SetUniformVec3f("light.direction", camera.Front);
 				for (unsigned int i = 0; i < 10; i++)
 				{
 					glm::mat4 model = glm::mat4(1.0f);
