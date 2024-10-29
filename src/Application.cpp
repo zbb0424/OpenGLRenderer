@@ -48,8 +48,12 @@ int main(void)
 		std::cout << "GLEW Error!" << std::endl;
 #pragma endregion
 
-#pragma region BLEND AND DEPTH
+#pragma region BLEND DEPTH STENCIL
 	GLCall(glEnable(GL_DEPTH_TEST));
+	GLCall(glDepthFunc(GL_LESS));
+	GLCall(glEnable(GL_STENCIL_TEST));
+	GLCall(glStencilFunc(GL_NOTEQUAL, 1, 0xFF)); //!=1 äÖÈ¾
+	GLCall(glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE));
 #pragma endregion
 	{
 #pragma region BUFFER SETTING
@@ -190,6 +194,10 @@ int main(void)
 
 		shader.Unbind();
 
+		Shader shaderStencil("res/shaders/vertexShader_light.glsl", "res/shaders/fragmentShader_light.glsl");
+		shaderStencil.Bind();
+		shaderStencil.Unbind();
+
 		Texture texture("res/textures/container2.png");
 		Texture texture_specular("res/textures/container2.png");
 		texture.Bind(0);
@@ -211,6 +219,9 @@ int main(void)
 			renderer.Clear();
 
 			{
+				GLCall(glStencilFunc(GL_ALWAYS, 1, 0xFF));
+				GLCall(glStencilMask(0xFF));
+
 				VAO.Bind();
 				shader.Bind();
 
@@ -234,6 +245,36 @@ int main(void)
 				VAO.Unbind();
 				shader.Unbind();
 			}
+
+			{
+				GLCall(glStencilFunc(GL_EQUAL, 0, 0xFF));
+				GLCall(glStencilMask(0x00));
+				glDisable(GL_DEPTH_TEST);
+
+				VAO.Bind();
+				shaderStencil.Bind();
+
+				glm::mat4 view = camera.GetViewMatrix();
+				glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+				for (unsigned int i = 0; i < 10; i++)
+				{
+					glm::mat4 model = glm::mat4(1.0f);
+					model = glm::translate(model, cubePositions[i]);
+					model = glm::scale(model, glm::vec3(1.1f, 1.1f, 1.1f));
+					float angle = 20.0f * i;
+					model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+					shaderStencil.SetUniformMat4f("u_MVP", projection * view * model);
+
+					renderer.DrawWithoutIBO(VAO, shaderStencil);
+				}
+
+				VAO.Unbind();
+				shaderStencil.Unbind();
+			}
+
+			glStencilMask(0xFF);
+			glStencilFunc(GL_ALWAYS, 0, 0xFF);
+			glEnable(GL_DEPTH_TEST);
 
 			// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 			glfwSwapBuffers(window);
